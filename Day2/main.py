@@ -22,22 +22,40 @@ with open(inputpath, 'r', encoding='utf-8') as file:
 # e.g. 11, 1221, 5544, 6788
 # we can determine all numbers with repititions by splitting the number in half and checking if both halves are the same
 
+
+# we collect candidates by generating all numbers between the first half of the digits of start and end of each range.
 candidates = []
 for r in ranges:
     start, end = r
 
-    for num in range(start, end + 1):
-        str_num = str(num)
-        length = len(str_num)
+    len_start = len(str(start))
+    len_end = len(str(end))
+
+    if len_start < 2 and end < 11:
+        continue # no candidates possible
+    
+    print(f'checking range: {start}-{end}')
+
+    half_start = int(str(start)[:(len_start//2)]) if len_start > 1 else 1 # at least two digits needed
+    half_end = int(str(end)[:((len_end+1)//2)])
+
+    for i in range(len_start, len_end+1):
         
-        if length % 2 == 0:
-            if str_num[:(length // 2)] == str_num[(length // 2):]:
+        if i%2 != 0:
+            continue # skip odd lengths
+
+        half_len = i//2
+
+        for j in range(half_start, half_end+1):
+
+            num = int(str(j)*2)
+            if num >= start and num <= end:
                 candidates.append(num)
-                logging.info(f'Found candidate: {num} in range {r}')
+                logging.debug(f'found candidate: {num} in range {start}-{end}')
             else:
-                logging.debug(f'Not a candidate: {num} in range {r}')
-        else:
-            logging.debug(f'Odd length, skipping: {num} in range {r}')
+                logging.debug(f'skipping candidate: {num} in range {start}-{end}')
+                continue
+
 
 
 # adding all candidates together
